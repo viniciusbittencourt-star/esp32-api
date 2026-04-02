@@ -9,6 +9,29 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// 🔥 CRIA TABELA AUTOMATICAMENTE
+async function criarTabela() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS logs (
+        id SERIAL PRIMARY KEY,
+        device_id TEXT,
+        status TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("Tabela pronta!");
+  } catch (err) {
+    console.error("Erro ao criar tabela:", err);
+  }
+}
+
+// rota principal
+app.get("/", (req, res) => {
+  res.send("API ESP32 funcionando 🚀");
+});
+
+// rota de log
 app.get("/log", async (req, res) => {
   const { device_id, status } = req.query;
 
@@ -29,10 +52,8 @@ app.get("/log", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("API ESP32 funcionando");
-});
-
-app.listen(port, () => {
+// inicia servidor + cria tabela
+app.listen(port, async () => {
   console.log("Rodando na porta " + port);
+  await criarTabela(); // 👈 AQUI resolve tudo
 });
