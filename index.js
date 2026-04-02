@@ -5,7 +5,6 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 🔥 libera acesso do GitHub Pages
 app.use(cors());
 
 // conexão com banco
