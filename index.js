@@ -1,15 +1,20 @@
 const express = require("express");
 const { Pool } = require("pg");
+const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// 🔥 libera acesso do GitHub Pages
+app.use(cors());
+
+// conexão com banco
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// 🔥 CRIA TABELA AUTOMATICAMENTE
+// 🔥 cria tabela automaticamente
 async function criarTabela() {
   try {
     await pool.query(`
@@ -26,12 +31,12 @@ async function criarTabela() {
   }
 }
 
-// rota principal
+// rota teste
 app.get("/", (req, res) => {
   res.send("API ESP32 funcionando 🚀");
 });
 
-// rota de log
+// 🔥 salvar dados
 app.get("/log", async (req, res) => {
   const { device_id, status } = req.query;
 
@@ -51,6 +56,8 @@ app.get("/log", async (req, res) => {
     res.send("Erro");
   }
 });
+
+// 🔥 listar dados (dashboard usa isso)
 app.get("/logs", async (req, res) => {
   try {
     const result = await pool.query(
@@ -63,8 +70,8 @@ app.get("/logs", async (req, res) => {
   }
 });
 
-// inicia servidor + cria tabela
+// inicia servidor
 app.listen(port, async () => {
   console.log("Rodando na porta " + port);
-  await criarTabela(); // 👈 AQUI resolve tudo
+  await criarTabela();
 });
