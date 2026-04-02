@@ -51,6 +51,17 @@ app.get("/log", async (req, res) => {
     res.send("Erro");
   }
 });
+app.get("/logs", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM logs ORDER BY created_at DESC LIMIT 50"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.send("Erro");
+  }
+});
 
 // inicia servidor + cria tabela
 app.listen(port, async () => {
